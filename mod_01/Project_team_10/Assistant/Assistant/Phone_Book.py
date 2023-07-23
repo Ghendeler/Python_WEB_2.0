@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import contextlib
 from collections import UserDict, UserList
 from datetime import date, datetime
@@ -193,8 +194,9 @@ class AddressBook(UserDict):
         for key, values in self.data.items():
             x.add_row([colored(f"{key}","blue"),colored(f"{values.show_phones()}","blue"),colored(f"{values.email}","blue"), colored(f"{values.birthday}","blue"), colored(f"{values.address}","blue")])
         return x
-    
-class Field:
+
+
+class Field(ABC):
     def __init__(self, value):
         self.value = value
 
@@ -216,8 +218,10 @@ class Field:
 class Name(Field):
     pass
 
+
 class Address(Field):
     pass
+
 
 class Phone(Field):
     # pass
@@ -235,8 +239,9 @@ class Phone(Field):
             print(f"Невалідний номер: {value}, повинен містити лише 10-12 цифр.")
             raise ValueError()
         else:
-            self.__value = value  
-    
+            self.__value = value
+
+
 class Birthday(Field):
     @property
     def value(self):
@@ -270,6 +275,7 @@ class Email(Field):
         else:
             self.__value = value
 
+
 class Record:
     def __init__(self, name: Name, phone: Phone = None, birthday: Birthday = None, email: Email = None, address: Address = None):
         self.name = name
@@ -283,7 +289,6 @@ class Record:
 
     def __repr__(self):
         return f'{self.name} {self.phones} {self.birthday} {self.email} {self.address}'
-
 
     def add_phone(self, phone: Phone):
         self.phones.append(phone)
@@ -317,7 +322,6 @@ class Record:
         self.birthday = birthday
         return 'Дата народження змінена'
     
-    
     def change_email_iner(self, email: Email):
         self.email = email
         return f'{self.email}'
@@ -345,7 +349,6 @@ class Record:
 
 
 file_name = 'Address_Book.bin'
-# commands = ['add', 'change', 'phones', 'hello', 'show_all', 'next', 'del_phone', 'del_contact', 'change_email', 'change_bd', 'edit_contact', 'search', 'help', 'change_address', 'birthday_in_days', 'exit']
 commands = ['add', 'phones', 'show_all', 'next', 'del_phone', 'del_contact', 'edit_contact', 'search', 'birthday_in_days', 'help', 'exit']
 
 def show_help():      
@@ -485,8 +488,6 @@ def main():
             break
         elif b == 'show_all' or d == 'show_all':
             print(phone_book.show_all_cont())
-        # elif b == 'hello' or d == 'hello':
-        #     print('How can i help you?')
         elif b == 'help' or d == 'help':
             print(show_help())
         elif b == 'next' or d == 'next':
