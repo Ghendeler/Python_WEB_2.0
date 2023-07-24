@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import contextlib
 from collections import UserDict
 from datetime import datetime
@@ -27,6 +28,25 @@ class IntentCompleter(Completer):
                 yield Completion(intent, start_position=-len(word_before_cursor))
 
 
+class Field(ABC):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return str(self.value)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, new_value):
+        self.__value = new_value
+
+
 class Notes(UserDict):
     filename = 'notes.sav'
     MAX_STR_LEN = 50
@@ -48,7 +68,7 @@ class Notes(UserDict):
     def find_in_notes(self, string):
         res = {}
         for k, v in self.data.items():
-            if v.text.lower().find(string.lower()) >= 0:
+            if v.content.value.find(string.lower()) >= 0:
                 res[k] = v
         return res
 
@@ -65,8 +85,9 @@ class Notes(UserDict):
     def find_by_tag(self, string):
         res = {}
         for k, v in self.data.items():
-            if string.lower() in v.tags:
-                res[k] = v
+            if v.tags.value:
+                if string.lower() in v.tags.value:
+                    res[k] = v
         return res
 
     def show_notes(self, data = None):
@@ -75,10 +96,8 @@ class Notes(UserDict):
             data = self.data
         x = PrettyTable(align='l', header=False, vrules=NONE, max_table_width=l)
         for k, v in data.items():
-            note = ''
-            t = v.text
-            note = colored(v.text,'blue') + '\n'
-            if v.tags:
+            note = colored(v.content,'blue') + '\n'
+            if v.tags.value:
                 note += colored(v.show_tags(),'light_cyan') + '\n'
             dt = v.datetime.strftime("<%d-%m-%Y %H:%M>")
             id = 'id: ' + str(k)
@@ -108,22 +127,34 @@ class Note:
     MAX_NOTE_LEN = 150   # max lenth of note
 
     def __init__(self, note, id):
-        self.text = note[:self.MAX_NOTE_LEN]
-        self.tags = set()
+        self.content = Content(note[:self.MAX_NOTE_LEN])
+        self.tags = Tags()
         self.datetime = datetime.now()
         self.id = id
 
     def add_note_tags(self, tags):
-        self.tags.update(tags.split())
-
+        if not self.tags.value:
+            self.tags.value = set()
+        self.tags.value.update(tags.split())
+        
     def del_tag(self, tag):
-        self.tags.remove(tag)
+        if self.tags.value:
+            self.tags.value.remove(tag)
 
     def show_tags(self):
-        return '#' + ', #'.join(self.tags)
+        return '#' + ', #'.join(self.tags.value)
 
     def edit_note(self, new_text):
-        self.text = new_text
+        self.content.value = new_text
+
+
+class Content(Field):
+    pass
+
+
+class Tags(Field):
+    def __init__(self, value=None):
+        self.value = value
 
 
 def fake_notes(notes):
@@ -171,7 +202,7 @@ def main():
             if note:
                 notes.add_note(note)
                 notes.save_to_file()
-                print("Вашу нотатку додано", 'green')
+                cprint("Вашу нотатку додано", 'green')
         elif answer == "show" or d == 'show':  #вывод всех заметок
             print(notes.show_notes())
         elif answer == "find" or d == 'find':  #поиск по заметкам
