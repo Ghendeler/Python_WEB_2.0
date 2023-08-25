@@ -1,8 +1,11 @@
 import asyncio
 import logging
+from datetime import datetime
 
+import aiofiles
 import names
 import websockets
+from aiopath import AsyncPath
 from currency_rate import get_currency_rate
 from websockets import WebSocketServerProtocol
 from websockets.exceptions import ConnectionClosedOK
@@ -40,7 +43,17 @@ class Server:
             await self.send_to_clients(f"{ws.name}: {message}")
             if message.startswith('exchange'):
                 data = message.split(' ')
+                if len(data) == 1:
+                    data.append(1)
                 await self.get_echange_rate(data[1])
+
+    async def log_exchange_rate(self, data):
+        apath = AsyncPath('logs')
+        if not await apath.exists():
+            await apath.mkdir()
+        dt = datetime.now().strftime('%d.%m.%Y %H:%M:%S')
+        async with aiofiles.open('logs/request.log', 'a') as f:
+            await f.write(dt + ' - ' + str(data) + '\n')
 
     async def get_echange_rate(self, data):
         message = 'Курс валют в Привате:'
@@ -53,6 +66,7 @@ class Server:
                 message += f'<br>{cur}: {rate["purchase"]} - {rate["sale"]}'
 
         await self.send_to_clients(f"{bot}: {message}")
+        await self.log_exchange_rate(data)
 
 
 async def main():
