@@ -12,12 +12,11 @@ def main():
         pika.ConnectionParameters(
             host='localhost',
             port=5672,
-            credentials=credentials
-        )
+            credentials=credentials)
     )
     channel = connection.channel()
 
-    channel.queue_declare(queue='hello_world')
+    channel.queue_declare(queue='by_email')
 
     def callback(ch, method, properties, body):
         body_decoded = body.decode('utf8')
@@ -26,7 +25,11 @@ def main():
         Customer.objects(id=json_recivede['id']).update(sended=True)
         print(f" [x] Sended email to {customer.fullname} - {customer.email}")
 
-    channel.basic_consume(queue='hello_world', on_message_callback=callback, auto_ack=True)
+    channel.basic_consume(
+        queue='by_email',
+        on_message_callback=callback,
+        auto_ack=True
+    )
 
     print(' [*] Waiting for messages. To exit press CTRL+C')
     channel.start_consuming()

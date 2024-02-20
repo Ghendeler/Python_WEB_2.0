@@ -1,14 +1,10 @@
+import random
 from datetime import date
 from faker import Faker
 
 import connect
 from models import Customer
 
-
-# def read_json_file(file):
-#     with open(file, encoding="UTF-8") as f:
-#         json_ = json.loads(f.read())
-#     return json_
 
 USER_NUMBER = 100
 
@@ -20,11 +16,13 @@ def main():
         Customer(
             fullname=fd.name(),
             email=fd.ascii_safe_email(),
+            phone=fd.phone_number(),
             born_date=fd.date_between(
                 start_date=date(1950, 1, 1),
                 end_date=date(2005, 1, 1)
             ),
-            address=fd.address()
+            address=fd.address(),
+            notification_method=random.choice(['email', 'sms'])
         ).save()
 
 

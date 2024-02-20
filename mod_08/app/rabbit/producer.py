@@ -18,7 +18,7 @@ def main():
     channel = connection.channel()
 
     channel.queue_declare(queue='hello_world')
-
+    
     send_list = get_send_list()
     for s in send_list:
         body = {
@@ -28,7 +28,6 @@ def main():
         }
         channel.basic_publish(exchange='', routing_key='hello_world', body=json.dumps(body))
 
-        # channel.basic_publish(exchange='', routing_key='hello_world', body='Hello world!'.encode())
     print(" [x] Sent 'Hello World!'")
     connection.close()
 
