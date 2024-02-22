@@ -1,0 +1,5 @@
+[DB]
+USER=user_name
+PASS=your_great_password
+DB_NAME=database_name
+DOMAIN=host_name_or_IP
