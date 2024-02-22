@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "parsing"
+version = "0.1.0"
+description = ""
+authors = ["Ghendel <jian.bakhman@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+scrapy = "^2.11.1"
+beautifulsoup4 = "^4.12.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
