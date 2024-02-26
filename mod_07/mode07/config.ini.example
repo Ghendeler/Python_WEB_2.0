@@ -1,0 +1,6 @@
+[postgresql]
+host = host_name_or_IP
+database = database_name
+user = postgres_user_name
+password = your_great_password
+port = database_port
