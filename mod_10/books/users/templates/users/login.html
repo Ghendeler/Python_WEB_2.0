@@ -1,0 +1,37 @@
+{% extends "quotes/base.html" %}
+
+{% block content %}
+
+<div style="margin-bottom: 30px; border-bottom: 2px solid; padding-left: 30px; padding-bottom: 20px">
+    <a class="btn btn-info" href="/" role="button"> Go back to the main page </a>
+</div>
+
+{% if messages %}
+<div>
+    {% for message in messages %}
+    <div {% if message.tags %} class="alert-{{ message.tags }}" {% endif %}>{{ message }}</div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<form action="{% url 'users:login' %}" method="post">
+    {% csrf_token %}
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label> Username:</label>
+            {{ form.username }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="form-group col-xs-3">
+            <label>Password:</label>
+            {{ form.password }}
+        </div>
+    </div>
+    <div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="reset" class="btn btn-default">Reset</button>
+    </div>
+</form>
+
+{% endblock %}

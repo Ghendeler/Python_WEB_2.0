@@ -1,0 +1,13 @@
+{% extends "noteapp/index.html" %}
+
+{% block content %}
+
+<h2>Top Ten tags</h2>
+
+{% for tag in tags %}
+<span class="tag-item">
+    <a class="tag" style="font-size: 28px" href="/tag/love/">love</a>
+</span>
+{% endfor %}
+
+{% endblock %}
