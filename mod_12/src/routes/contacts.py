@@ -88,21 +88,12 @@ async def contacts_birthday(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    ids = []
-    cur_date = date.today()
-    y = cur_date.year
-
-    contacts = db.query(Contact).all()
-    for contact in contacts:
-        cur_birthday = contact.birthday.replace(year=y)
-        if cur_birthday < cur_date:
-            cur_birthday = contact.birthday.replace(year=y + 1)
-        delta = (cur_birthday - cur_date).days
-        if delta <= days:
-            ids.append(contact.id)
-
-    contacts_birthday = db.query(Contact).filter(Contact.id.in_(ids)).all()
-    return contacts_birthday
+    contacts = await repository_contacts.get_contacts_by_birthday(
+        days, current_user, db
+    )
+    if contacts is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
+    return contacts
 
 
 @router.get("/find/", response_model=list[ResponseContactModel])

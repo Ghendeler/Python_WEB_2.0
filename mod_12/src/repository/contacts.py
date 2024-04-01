@@ -1,3 +1,4 @@
+from datetime import date
 from typing import List
 
 from sqlalchemy.orm import Session
@@ -69,3 +70,21 @@ async def remove_contact(contact_id: int, user: User, db: Session) -> Contact | 
         db.delete(contact)
         db.commit()
     return contact
+
+
+async def get_contacts_by_birthday(days: int, user: User, db: Session):
+    ids = []
+    cur_date = date.today()
+    y = cur_date.year
+
+    contacts = db.query(Contact).filter(Contact.user_id == user.id).all()
+    for contact in contacts:
+        cur_birthday = contact.birthday.replace(year=y)
+        if cur_birthday < cur_date:
+            cur_birthday = contact.birthday.replace(year=y + 1)
+        delta = (cur_birthday - cur_date).days
+        if delta <= days:
+            ids.append(contact.id)
+
+    contacts_birthday = db.query(Contact).filter(Contact.id.in_(ids)).all()
+    return contacts_birthday
