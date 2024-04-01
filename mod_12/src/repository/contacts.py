@@ -1,6 +1,7 @@
 from datetime import date
 from typing import List
 
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from src.database.models import Contact, User
@@ -88,3 +89,19 @@ async def get_contacts_by_birthday(days: int, user: User, db: Session):
 
     contacts_birthday = db.query(Contact).filter(Contact.id.in_(ids)).all()
     return contacts_birthday
+
+
+async def get_contacts_by_str(find_str: str, user: User, db: Session):
+    contacts = (
+        db.query(Contact)
+        .filter(
+            or_(
+                Contact.name.like(f"%{find_str}%"),
+                Contact.surname.like(f"%{find_str}%"),
+                Contact.email.like(f"%{find_str}%"),
+            ),
+            Contact.user_id == user.id,
+        )
+        .all()
+    )
+    return contacts

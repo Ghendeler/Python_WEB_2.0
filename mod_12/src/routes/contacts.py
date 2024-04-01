@@ -1,8 +1,6 @@
-from datetime import date
 from typing import List
 
 from fastapi import APIRouter, HTTPException, Depends, status, Path
-from sqlalchemy import or_, text
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
@@ -102,15 +100,9 @@ async def find_contacts(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    contacts = (
-        db.query(Contact)
-        .filter(
-            or_(
-                Contact.name.like(f"%{find_str}%"),
-                Contact.surname.like(f"%{find_str}%"),
-                Contact.email.like(f"%{find_str}%"),
-            )
-        )
-        .all()
+    contacts = await repository_contacts.get_contacts_by_str(
+        find_str, current_user, db
     )
+    if contacts is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     return contacts
