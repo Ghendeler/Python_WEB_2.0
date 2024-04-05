@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, Integer, String, func
+from sqlalchemy import Column, Date, Integer, String, Boolean, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
@@ -33,3 +33,4 @@ class User(Base):
     password = Column(String(255), nullable=False)
     created_at = Column("crated_at", DateTime, default=func.now())
     refresh_token = Column(String(255), nullable=True)
+    confirmed = Column(Boolean, default=False)
