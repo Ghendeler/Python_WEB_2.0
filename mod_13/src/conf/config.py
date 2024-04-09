@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     mail_from: str
     mail_port: int
     mail_server: str
+    redis_host: str
+    redis_port: int
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
