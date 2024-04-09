@@ -1,18 +1,24 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException, Depends, status, Path
+from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
-from src.schemas import ContactModel, ResponseContactModel
-from src.repository import contacts as repository_contacts
 from src.database.models import Contact, User
+from src.repository import contacts as repository_contacts
+from src.schemas import ContactModel, ResponseContactModel
 from src.services.auth import auth_service
 
 router = APIRouter(prefix="/contacts", tags=["contacts"])
 
 
-@router.get("/", response_model=List[ResponseContactModel])
+@router.get(
+    "/",
+    response_model=List[ResponseContactModel],
+    description="No more than 10 requests per minute",
+    dependencies=[Depends(RateLimiter(times=10, seconds=60))],
+)
 async def read_contacts(
     skip: int = 0,
     limit: int = 10,
@@ -37,7 +43,12 @@ async def read_contact(
     return contact
 
 
-@router.post("/", response_model=ContactModel)
+@router.post(
+    "/",
+    response_model=ContactModel,
+    description="No more than 10 requests per minute",
+    dependencies=[Depends(RateLimiter(times=10, seconds=60))]
+)
 async def create_contact(
     body: ContactModel,
     db: Session = Depends(get_db),
@@ -100,9 +111,7 @@ async def find_contacts(
     db: Session = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    contacts = await repository_contacts.get_contacts_by_str(
-        find_str, current_user, db
-    )
+    contacts = await repository_contacts.get_contacts_by_str(find_str, current_user, db)
     if contacts is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Not found")
     return contacts
