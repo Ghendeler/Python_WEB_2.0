@@ -5,12 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_limiter import FastAPILimiter
 
 from src.conf.config import settings
-from src.routes import auth, contacts
+from src.routes import auth, contacts, users
 
 app = FastAPI()
 
 app.include_router(auth.router, prefix="/api")
 app.include_router(contacts.router, prefix="/api")
+app.include_router(users.router, prefix='/api')
 
 origins = ["http://localhost:3000"]
 app.add_middleware(
