@@ -25,6 +25,10 @@ app.add_middleware(
 
 @app.on_event("startup")
 async def startup():
+    """
+    This function is run at the start of the application.
+    It initializes the FastAPILimiter with a Redis instance.
+    """
     r = await redis.Redis(
         host=settings.redis_host,
         port=settings.redis_port,
@@ -37,8 +41,16 @@ async def startup():
 
 @app.get("/")
 def read_root():
+    """
+    This function is the root endpoint of the application.
+    It returns a simple message.
+    """
     return {"message": "Hello World"}
 
 
 if __name__ == "__main__":
+    """
+    This is the main entry point of the application.
+    It runs the FastAPI application with uvicorn.
+    """
     uvicorn.run(app, host="0.0.0.0", port=8000)

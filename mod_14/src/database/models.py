@@ -8,6 +8,9 @@ Base = declarative_base()
 
 
 class Contact(Base):
+    """
+    Represents a Contact in the database with relevant fields.
+    """
     __tablename__ = "contacts"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(50))
@@ -26,6 +29,9 @@ class Contact(Base):
 
 
 class User(Base):
+    """
+    Represents a User in the database with relevant fields.
+    """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
     username = Column(String(50))

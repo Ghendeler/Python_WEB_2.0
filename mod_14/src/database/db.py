@@ -11,6 +11,10 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Dependency
 def get_db():
+    """
+    Yields a new database session from the session factory.
+    Ensures the session is closed after use.
+    """
     db = SessionLocal()
     try:
         yield db

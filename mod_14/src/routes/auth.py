@@ -33,6 +33,15 @@ async def signup(
     request: Request,
     db: Session = Depends(get_db),
 ):
+    """
+    Sign up a new user.
+
+    :param body: User details.
+    :param background_tasks: Background tasks instance.
+    :param request: Request instance.
+    :param db: Database session.
+    :return: User creation status.
+    """
     exist_user = await repository_users.get_user_by_username(body.email, db)
     if exist_user:
         raise HTTPException(
@@ -51,6 +60,13 @@ async def signup(
 
 @router.get("/confirmed_email/{token}")
 async def confirmed_email(token: str, db: Session = Depends(get_db)):
+    """
+    Confirm user email.
+
+    :param token: Email confirmation token.
+    :param db: Database session.
+    :return: Email confirmation status.
+    """
     email = await auth_service.get_email_from_token(token)
     user = await repository_users.get_user_by_email(email, db)
     if user is None:
@@ -70,6 +86,15 @@ async def request_email(
     request: Request,
     db: Session = Depends(get_db),
 ):
+    """
+    Request email confirmation.
+
+    :param body: Email request details.
+    :param background_tasks: Background tasks instance.
+    :param request: Request instance.
+    :param db: Database session.
+    :return: Email request status.
+    """
     user = await repository_users.get_user_by_email(body.email, db)
 
     if user.confirmed:
@@ -85,6 +110,13 @@ async def request_email(
 async def login(
     body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
+    """
+    Log in a user.
+
+    :param body: Login details.
+    :param db: Database session.
+    :return: Login status and tokens.
+    """
     user = await repository_users.get_user_by_username(body.username, db)
     if user is None:
         raise HTTPException(
@@ -114,6 +146,13 @@ async def refresh_token(
     credentials: HTTPAuthorizationCredentials = Security(security),
     db: Session = Depends(get_db),
 ):
+    """
+    Refresh user tokens.
+
+    :param credentials: User credentials.
+    :param db: Database session.
+    :return: New access and refresh tokens.
+    """
     token = credentials.credentials
     email = await auth_service.decode_refresh_token(token)
     user = await repository_users.get_user_by_email(email, db)

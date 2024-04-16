@@ -9,6 +9,15 @@ from src.schemas import ContactModel, ResponseContactModel
 
 
 async def get_contacts(skip: int, limit: int, user: User, db: Session) -> List[Contact]:
+    """
+    Get a list of contacts for a specific user.
+
+    :param skip: Number of contacts to skip.
+    :param limit: Maximum number of contacts to return.
+    :param user: The user for whom to get the contacts.
+    :param db: Database session.
+    :return: List of contacts.
+    """
     return (
         db.query(Contact)
         .filter(Contact.user_id == user.id)
@@ -19,6 +28,14 @@ async def get_contacts(skip: int, limit: int, user: User, db: Session) -> List[C
 
 
 async def get_contact(contact_id: int, user: User, db: Session) -> Contact:
+    """
+    Get a specific contact for a user.
+
+    :param contact_id: The id of the contact to get.
+    :param user: The user for whom to get the contact.
+    :param db: Database session.
+    :return: The requested contact.
+    """
     return (
         db.query(Contact)
         .filter(Contact.id == contact_id, Contact.user_id == user.id)
@@ -27,6 +44,14 @@ async def get_contact(contact_id: int, user: User, db: Session) -> Contact:
 
 
 async def create_contact(body: ContactModel, user: User, db: Session):
+    """
+    Create a new contact for a user.
+
+    :param body: The contact information.
+    :param user: The user for whom to create the contact.
+    :param db: Database session.
+    :return: The created contact.
+    """
     new_contact = Contact(
         name=body.name,
         surname=body.surname,
@@ -45,6 +70,15 @@ async def create_contact(body: ContactModel, user: User, db: Session):
 async def update_contact(
     contact_id: int, body: ContactModel, user: User, db: Session
 ) -> Contact | None:
+    """
+    Update a contact for a user.
+
+    :param contact_id: The id of the contact to update.
+    :param body: The updated contact information.
+    :param user: The user for whom to update the contact.
+    :param db: Database session.
+    :return: The updated contact.
+    """
     contact = (
         db.query(Contact)
         .filter(Contact.id == contact_id, Contact.user_id == user.id)
@@ -62,6 +96,14 @@ async def update_contact(
 
 
 async def remove_contact(contact_id: int, user: User, db: Session) -> Contact | None:
+    """
+    Remove a contact for a user.
+
+    :param contact_id: The id of the contact to remove.
+    :param user: The user for whom to remove the contact.
+    :param db: Database session.
+    :return: The removed contact.
+    """
     contact = (
         db.query(Contact)
         .filter(Contact.id == contact_id, Contact.user_id == user.id)
@@ -74,6 +116,14 @@ async def remove_contact(contact_id: int, user: User, db: Session) -> Contact | 
 
 
 async def get_contacts_by_birthday(days: int, user: User, db: Session):
+    """
+    Get contacts for a user whose birthday is within a certain number of days.
+
+    :param days: The number of days within which the contact's birthday falls.
+    :param user: The user for whom to get the contacts.
+    :param db: Database session.
+    :return: The contacts whose birthday falls within the specified number of days.
+    """
     ids = []
     cur_date = date.today()
     y = cur_date.year
@@ -92,6 +142,14 @@ async def get_contacts_by_birthday(days: int, user: User, db: Session):
 
 
 async def get_contacts_by_str(find_str: str, user: User, db: Session):
+    """
+    Get contacts for a user based on a search string.
+
+    :param find_str: The string to search for in the contact's name, surname, and email.
+    :param user: The user for whom to get the contacts.
+    :param db: Database session.
+    :return: The contacts that match the search string.
+    """
     contacts = (
         db.query(Contact)
         .filter(
