@@ -20,7 +20,7 @@ REST API main
 
 
 REST API repository Contacts
-=========================
+============================
 .. automodule:: src.repository.contacts
   :members:
   :undoc-members:
