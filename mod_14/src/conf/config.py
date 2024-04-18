@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+
 class Settings(BaseSettings):
     """
     A class used to represent the application settings.
@@ -33,7 +34,6 @@ class Settings(BaseSettings):
     cloudinary_api_secret : str
         The API secret for the Cloudinary account.
     """
-
 
     sqlalchemy_database_url: str
     secret_key: str
