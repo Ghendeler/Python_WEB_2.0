@@ -35,7 +35,7 @@ class Settings(BaseSettings):
         The API secret for the Cloudinary account.
     """
 
-    sqlalchemy_database_url: str = 'localhost'
+    sqlalchemy_database_url: str = 'postgresql://postgres:postgres@localhost:5432/postgres'
     secret_key: str = '1111'
     algorithm: str = 'sha256'
     mail_username: str = 'string@doman.com'

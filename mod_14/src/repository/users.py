@@ -22,7 +22,7 @@ async def get_user_by_username(username: str, db: Session) -> User:
 
     :param username:str: The username of the user to fetch.
     :param db:Session: The database session.
-    :return:User The fetched user.
+    :return:User: The fetched user.
     """
     return db.query(User).filter(User.username == username).first()
 
