@@ -35,19 +35,19 @@ class Settings(BaseSettings):
         The API secret for the Cloudinary account.
     """
 
-    sqlalchemy_database_url: str
-    secret_key: str
-    algorithm: str
-    mail_username: str
-    mail_password: str
-    mail_from: str
-    mail_port: int
-    mail_server: str
-    redis_host: str
-    redis_port: int
-    cloudinary_name: str
-    cloudinary_api_key: str
-    cloudinary_api_secret: str
+    sqlalchemy_database_url: str = 'localhost'
+    secret_key: str = '1111'
+    algorithm: str = 'sha256'
+    mail_username: str = 'string@doman.com'
+    mail_password: str = 'string'
+    mail_from: str = 'from@doman.com'
+    mail_port: int = 1234
+    mail_server: str = 'doman.com'
+    redis_host: str = 'localhost'
+    redis_port: int = 1234
+    cloudinary_name: str = 'name'
+    cloudinary_api_key: str = 'api_key'
+    cloudinary_api_secret: str ='secret_kjkjnkjn'
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
