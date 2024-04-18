@@ -1,5 +1,7 @@
 Init Alembic migrations: `alembic init migrations`
-`alembic revision --autogenerate -m 'Init'`
-`alembic upgrade head`
+Make first migration: `alembic revision --autogenerate -m 'Init'`
+Migrate all: `alembic upgrade head`
+
+Run docker-compose.yml: `docker-compose up -d`
 
 Run project: `uvicorn main:app --host localhost --port 8000 --reload`
