@@ -1,28 +1,67 @@
+import datetime
 import unittest
 from unittest.mock import MagicMock
-import datetime
 
 from sqlalchemy.orm import Session
 
-# from src.database.models import Note, Tag, User
-from src.database.models import Contact, User
+from src.database.db import engine, get_db
+from src.database.models import Base, Contact, User
+from src.repository.contacts import (create_contact, get_contact, get_contacts,
+                                     get_contacts_by_birthday,
+                                     get_contacts_by_str, remove_contact,
+                                     update_contact)
 from src.schemas import ContactModel
-from src.repository.contacts import (
-    get_contacts,
-    get_contact,
-    create_contact,
-    remove_contact,
-    update_contact,
-    get_contacts_by_birthday,
-    get_contacts_by_str,
-)
 
 
 class TestContacts(unittest.IsolatedAsyncioTestCase):
 
+    @classmethod
+    def setUpClass(self):
+        self.user = User(id=1)
+        contacts = [
+            Contact(
+                name='Jenny',
+                surname='Brown',
+                email='@test.com',
+                birthday=datetime.date(year=1975, month=3, day=27),
+                id=1,
+                user_id=self.user.id,
+            ),
+            Contact(
+                name='Willy',
+                surname='Coreej',
+                email='@test.com',
+                birthday=datetime.date(year=1982, month=4, day=20),
+                id=2,
+                user_id=self.user.id,
+            ),
+            Contact(
+                name='Phillip',
+                surname='Talor',
+                email='www@test.com',
+                birthday=datetime.date(year=1975, month=4, day=26),
+                id=3,
+                user_id=self.user.id,
+            ),
+            Contact(
+                name='Ron',
+                surname='Sheeft',
+                email='@test.com',
+                birthday=datetime.date(year=1962, month=5, day=12),
+                id=4,
+                user_id=self.user.id,
+            ),
+        ]
+        Contact.__table__.drop(engine)
+        # engine.execute("DROP table IF EXISTS contacts")
+        # Base.metadata.drop_all(engine)
+        Base.metadata.create_all(engine)
+        self.db = next(get_db())
+        self.db.add_all(contacts)
+        self.db.commit()
+
     def setUp(self):
         self.session = MagicMock(spec=Session)
-        self.user = User(id=1)
 
     async def test_get_contacts(self):
         contacts = [Contact(), Contact(), Contact()]
@@ -103,19 +142,13 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, None)
 
     async def test_get_contacts_by_birthday_found(self):
-        contacts = [
-            Contact(birthday=datetime.date(y=1975, m=3, d=27), id=1),
-            Contact(birthday=datetime.date(y=1982, m=4, d=20), id=2),
-            Contact(birthday=datetime.date(y=1975, m=4, d=25), id=3),
-            Contact(birthday=datetime.date(y=1962, m=5, d=12), id=4),
-        ]
-        self.session.query().filter().all.return_value = contacts
-        result = await get_contacts_by_birthday(days=7, user=self.user, db=self.session)
-        self.assertEqual(result, contacts)
+        result = await get_contacts_by_birthday(days=7, user=self.user, db=self.db)
+        self.assertEqual(result[0].id, 3)
 
     async def test_get_contacts_by_str_found(self):
-        # get_contacts_by_str(find_str: str, user: User, db: Session)
-        ...
+        result = await get_contacts_by_str(find_str='w', user=self.user, db=self.db)
+        res_list = [c.id for c in result]
+        self.assertEqual(res_list, [1, 3])
 
 
 if __name__ == "__main__":

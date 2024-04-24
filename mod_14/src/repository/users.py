@@ -64,6 +64,7 @@ async def update_token(user: User, token: str | None, db: Session) -> None:
     """
     user.refresh_token = token
     db.commit()
+    return user
 
 
 async def update_avatar(email, url: str, db: Session) -> User:
